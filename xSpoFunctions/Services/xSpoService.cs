@@ -41,21 +41,33 @@ namespace xSpoFunctions.Services
         {
             try
             {
-                var filePath = "xSpoPools.json";
-                var json = JsonConvert.SerializeObject(pools);
+                var fileName = "xSpoPools.json";
+                var bucketName = "meroada-public";
+                var content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(pools));
 
-                File.WriteAllText(filePath, json);
+                var obj = new Google.Apis.Storage.v1.Data.Object
+                {
+                    Bucket = bucketName,
+                    Name = fileName,
+                    ContentType = "text/json",
+                    //Metadata = new Dictionary<string, string>
+                    //{
+
+                    //}
+                };
 
                 var gcsStorage = StorageClient.Create();
-            
 
-                using(var f = File.OpenRead(filePath))
-                {
-                    string objectName = Path.GetFileName(filePath);
-                    await gcsStorage.UploadObjectAsync("meroada-public", objectName, null, f);
-                    Console.WriteLine($"Uploaded {objectName}");
-                    return true;
-                }
+                obj = gcsStorage.UploadObject(obj, new MemoryStream(content));
+                return true;
+
+                //using(var f = File.OpenRead(filePath))
+                //{
+                //    string objectName = Path.GetFileName(filePath);
+                //    await gcsStorage.UploadObjectAsync("meroada-public", objectName, null, f);
+                //    Console.WriteLine($"Uploaded {objectName}");
+                //    return true;
+                //}
             }
             catch(Exception err)
             {

@@ -29,7 +29,11 @@ namespace xSpoFunctions.Triggers
             }
 
             //Save to GCS
-            var uploaded = xSS.SavePoolDetailsToGCS(pools);
+            var uploaded = await xSS.SavePoolDetailsToGCS(pools);
+            if(uploaded)
+                Console.WriteLine("Details updated!");
+            else
+                Console.WriteLine("Problem updating details");
         }
 
     }
